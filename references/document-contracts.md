@@ -67,6 +67,8 @@ Bootstrap is a scaffolding utility. Its invocation assumes the main agent has ob
 
 ## Setup and within-stage changes
 
+Resolve `<skill-dir>` from the currently loaded Maestro `SKILL.md` path. For the default Codex installation, use `~/.codex/skills/maestro`, including when it is a symlink to a moved checkout. If an older chat or project record points to a missing script, check the current Maestro path before reporting it missing.
+
 ```bash
 python <skill-dir>/scripts/bootstrap_workflow.py --repo <root> --project-name "Project" --stage 01-name
 python <skill-dir>/scripts/validate_workflow.py --repo <root>
