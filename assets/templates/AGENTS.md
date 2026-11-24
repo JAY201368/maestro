@@ -1,21 +1,30 @@
-# {{PROJECT_NAME}} working agreement
+# {{PROJECT_NAME}} 仓库协作约定
 
-Read applicable repository instructions and the document paths supplied by the main agent. Inspect the worktree and preserve others' changes. Architecture controls public contracts and the assigned task card defines ownership, behavior and acceptance.
+开工前先阅读本文件以及主代理提供的项目文档路径。共享工作区可能同时存在其他人的未提交改动，务必先检查工作树并保留无关修改。公共接口与核心规则以 `ARCHITECTURE.md` 为准，单次任务的修改范围、实施步骤与验收标准以分配的任务卡为准。
 
-## Ownership
+## 职责与所有权
 
-Each worker owns one task ID in a fresh context. Default to two independent implementation workers at most, within runtime capacity. Shared-file or coupled-contract work is serial. The main agent owns shared workflow records, routing, contract decisions, integration and final acceptance. Workers report proposed changes and evidence, and do not delegate or claim another task.
+- 每个执行者在全新上下文中只负责一张任务卡，禁止递归派发、禁止跨卡修改。
+- 默认最多同时运行 2 个互不冲突的实现执行者；改动同一文件或涉及联动接口的任务必须串行。
+- 主代理统一负责任务拆解、模型路由、公共契约拍板、所有共享工作流文档维护、最终验收与本地 Git 提交。执行者只在回报中提交证据与建议，不直接修改共享工作流账本。
 
-## Project conventions
+## 项目常用命令与规范
 
-TODO: Record the actual relevant commands, module boundaries and code/data/security conventions. Preserve existing repository guidance when adapting this template.
+请替换为本项目真实的依赖安装、单元测试、集成测试、类型检查、代码规范检查与构建命令，以及必须遵守的模块边界、数据安全或产品文案规范。改造已有项目时，保留仓库原本有效的规则。
 
-## Verification
+## 按风险分级验证
 
-Select the lowest sufficient level by impact. L0 uses diff/whitespace review and moved-link checks. L1 uses directly relevant checks. L2 adds relevant type/build checks for cross-component or stateful changes. L3 covers critical flows with comprehensive relevant verification. Use browser checks only when visual correctness or interaction is central, cheaper evidence is insufficient, or explicitly requested.
+始终选用足以证明正确的最低验证级别：
+- **L0**：纯文本、文档、链接或微调——查 diff、空白字符与移动后的路径。
+- **L1**：局部逻辑或纯函数——跑直接相关的单元测试。
+- **L2**：跨组件或有状态改动——跑定向测试及必要的类型/Lint/局部构建检查。
+- **L3**：安全、鉴权、迁移、并发事务或核心主链路——跑隔离环境契约/集成测试与必要端到端校验。
+- 浏览器视觉检查仅在视觉/交互本身是核心目标、更轻量检查不足以证明、或用户明确要求时使用。
 
-Reuse applicable evidence across worker, main-agent and stage acceptance. Rerun for a concrete change or risk and record why. Stop after sufficient evidence. Report actual failures and skipped checks.
+有效证据在执行者自检、主代理审查与阶段收尾间直接复用；仅在相关代码、依赖、配置或环境变化，或存在具体集成风险时重跑并记录原因。证据足够即停止加码，如实记录所有失败项与跳过项。
 
-## Delivery
+## 交付与授权红线
 
-Report task behavior, changed files, acceptance evidence, exact commands/results, tested file state/environment, proposed decisions and unresolved issues. Only the main agent accepts work and updates shared records. Follow repository authorization rules for commits, external publication and destructive operations.
+- 执行者按派发模板的回报清单提交结果、改动文件、命令与原始输出、环境信息、潜在影响与阻塞项。
+- 核心/高风险任务验收后独立本地提交；紧密相关的低中配小卡可按阶段计划合并批次提交。
+- 未经用户明确授权，严禁执行 `git push`、对外发布、生产环境变更、开通付费资源或破坏性操作。

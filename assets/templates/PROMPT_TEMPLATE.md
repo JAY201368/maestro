@@ -1,23 +1,37 @@
-# Single-task assignment
+# {{PROJECT_NAME}} — 阶段 {{STAGE_ID}} 单卡派发模板
 
-## Dispatch inputs
+## 1. 本次派发上下文
 
-- Repository root — TODO absolute path.
-- Document map — TODO absolute paths for instructions, architecture, decisions, stage requirements, tasks, progress and acceptance.
-- Ownership and exclusions — TODO exact files/modules, neighboring worker scopes, and shared records excluded from edits.
-- Dependency evidence — TODO completed prerequisites and relevant evidence.
-- Configuration — TODO exact profile, model, reasoning effort and routing rationale.
-- Complete task card — TODO insert one complete card including all acceptance criteria and verification mapping.
-- Reusable evidence — TODO applicable evidence, tested state and any required additional checks.
+- **仓库根目录：** 请替换为绝对路径。
+- **核心文档绝对路径：** 请替换为 `AGENTS.md`、`docs/workflow/current.md`、`ARCHITECTURE.md`、`DECISIONS.md` 及本阶段 `REQUIREMENTS.md`、`TASKS.md`、`PROGRESS.md`、`ACCEPTANCE.md` 的绝对路径。
+- **当前代码基线与工作树说明：** 请替换为当前基线提交哈希、已验收的前置卡证据编号与接口摘要，以及并行执行者的负责路径（你必须保留他人的改动）。
+- **执行者配置：** 请替换为具体 profile、模型、推理深度与路由理由。
+- **可复用证据：** 请替换为已有效可复用的测试/检查结果，以及本卡仍须补充的具体检查。
+- **完整任务卡原文：**
+  请替换为从 `TASKS.md` 完整复制的单张任务卡（包含任务背景、修改范围、实施步骤、禁区与约束、边界与异常、验收标准与验证方式）。
 
-## Worker instructions
+## 2. 本阶段实现红线（防跑偏禁区）
 
-Read the mapped relevant documents and applicable ancestor instructions. Inspect the worktree and restate scope and dependencies. You are not alone in the codebase; preserve others' edits. Implement or investigate only this task ID. Do not delegate, change profiles or claim another task.
+请替换为本阶段所有执行者都必须严守的 3–6 条具体红线（明确写“绝不做什么”，例如冻结目录、禁止引入的方案、不可破坏的兼容边界或文案红线）：
 
-The main agent owns shared workflow documents and final acceptance. Report contract gaps or product ambiguity before dependent changes. Propose durable decisions in your report. Do not update task checkboxes, shared progress, architecture, acceptance or decision logs.
+1. 请替换为红线一。
+2. 请替换为红线二。
 
-Run the planned minimum sufficient checks, reusing valid evidence. Report unexpected failures precisely. Do not add broad tests/builds solely to produce more evidence. Remain available for same-task corrections until the main agent accepts or retires this assignment.
+## 3. 开工前核对与执行纪律
 
-## Completion report
+1. **先读代码再动手**：阅读上述相关文档与负责路径的真实源码，核对工作树现状。动手前先确认：卡片里的文件路径、函数签名、前提假设与当前真实代码是否完全一致。
+2. **遇歧义立刻停下回报，绝不脑补**：如果发现真实代码与卡片假设冲突、存在未定义的公共接口缺口、或需要产品方向取舍，**立刻停止相关改动并向主代理汇报具体差异与建议选项**，不要自行猜着改，也不要擅自扩大修改范围或顺手重构无关代码。
+3. **严格单卡归属**：你只负责本张任务卡，不递归派发、不私自换档位、不领取别的任务。共享工作流文档（`ARCHITECTURE.md`、`DECISIONS.md`、`REQUIREMENTS.md`、`TASKS.md`、`PROGRESS.md`、`ACCEPTANCE.md` 等）只由主代理维护，严禁直接修改。
+4. **按约自检、不乱加码**：只运行任务卡 `验证方式` 指定的最小充分检查，复用有效证据；遇到意外失败如实定位并报告，不要为了凑证据擅自跑重型全量构建或无关测试。未获明确授权不得执行 `git commit`、`git push`、部署或外部付费调用。
+5. **随时待命返工**：提交报告后保持可用，直到主代理正式验收或退役本任务。
 
-Report task ID, changed files, observable behavior, each acceptance criterion and evidence, commands/results, tested file state and relevant environment, proposed decisions, contract/data/configuration impacts and blockers. Include configured profile/model/effort separately from any observed runtime metadata. Never label a skipped check as passed.
+## 4. 完工回报清单
+
+完成或受阻时，请按以下结构简明回报：
+
+1. **任务卡号与完成结论**：已完成 / 部分阻塞（写清卡点）。
+2. **改动文件清单**：逐个列出新增、修改或删除的文件及改动摘要。
+3. **逐条验收对照（A1 / A2 ...）**：每条标准对应的实际观察结果与证据。
+4. **实际执行的检查命令与原始结果**：完整命令、通过/失败/跳过计数、测试时的文件状态与关键环境版本（**严禁把跳过的检查标为通过**）。
+5. **配置与运行时元数据**：分开列出“派发配置的 profile/模型/推理深度”与“实际可观测的运行时元数据”。
+6. **建议决策、潜在影响与技术债**：是否有需要主代理更新到架构/决策账本或记录为技术债的发现。

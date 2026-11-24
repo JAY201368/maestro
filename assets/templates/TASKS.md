@@ -1,18 +1,44 @@
-# {{PROJECT_NAME}} — {{STAGE_ID}} tasks
+# {{PROJECT_NAME}} — 阶段 {{STAGE_ID}} 任务卡
 
-The main agent maintains this ledger. Each task gets a fresh worker. Dispatch only evidenced dependency-ready tasks with independent ownership. Default maximum concurrency is two implementation workers. Record any agreed higher cap in the stage plan.
+> 本文件由主代理维护。每张卡分配一个全新上下文的执行者，只有前置依赖已验收有证且修改范围互不重叠的卡才可并行（默认最多 2 个实现执行者）。
 
-### [ ] T01 — TODO observable outcome
+## 依赖关系与执行批次
 
-**Dependencies:** None
-**Worker:** spec-worker-luna-max
-**Routing rationale:** TODO complexity, uncertainty and consequences.
-**Requirements:** TODO source requirement IDs and paths.
-**Scope:** TODO owned files/modules and exclusions.
-**Behavior:** TODO entry points, inputs, outputs and applicable states.
-**Boundaries:** TODO relevant failures, edge cases and concurrency behavior.
-**Acceptance:**
-- A1. TODO concrete observable result.
-**Verification:** TODO lowest sufficient level and A1-to-check mapping.
+```text
+T01（请替换为简要说明）
+ └─► T02（请替换为简要说明）
+```
 
-Add Evidence only after actual acceptance. Keep transferred tasks unchecked and record the user's approval and destination in Disposition. Cross-stage references include the stage ID.
+- **提交批次说明：** 核心/高风险卡每卡验收后独立提交；联系紧密的 `luna-max` / `sol-medium` 小卡可在此标注合批提交分组（如“批次 1：T01–T02 合并提交”）。
+
+## 模型分层概览
+
+- `luna-max`：请替换为数量 | `sol-medium`：请替换为数量 | `sol-high`：请替换为数量 | `sol-xhigh/max`：请替换为数量 | `astra-*`：请替换为数量
+
+---
+
+### [ ] T01 — 请替换为一句可观察的交付结果
+
+**依赖:** 无
+**执行者:** spec-worker-luna-max
+**路由理由:** 请替换为复杂度、不确定性与失败代价说明；若选用 sol-high 及以上，必须说明为何不能通过拆细或补清步骤交由 luna-max / sol-medium。
+**关联需求:** [R01](REQUIREMENTS.md)
+**任务背景:** 请替换为 1–3 句大白话，讲清这张卡解决什么问题、在整体流程里处于哪一环、上下游怎么衔接。
+**修改范围:**
+- 新增/修改：请替换为确切文件路径与涉及的函数/类/模块（例如 `src/path/to/file.ts`、`tests/unit/file.test.ts`）。
+- 排除：请替换为明确禁止修改的文件、目录或模块。
+**实施步骤:**
+1. 请替换为步骤一（写明要改哪个文件里的什么结构/函数，复用哪些既有实现）。
+2. 请替换为步骤二（写明核心处理逻辑或接口对接措施）。
+3. 请替换为步骤三（写明需要新增或更新的具体测试用例）。
+**禁区与约束:**
+- 请替换为本卡防跑偏红线（例如禁止改动冻结目录、禁止擅自扩大重构、禁止引入未约定依赖）。
+**边界与异常:** 请替换为具体边界值、空值/错误处理与并发约束；若某类常见边界不适用，明确写明原因。
+**验收标准:**
+- A1. 请替换为具体、客观、可直接核对的预期结果。
+**验证方式:** L1。请替换为覆盖每条验收标准的具体可执行命令或检查步骤（例如 `pnpm test tests/unit/file.test.ts`），以及预期输出。
+**提交策略:** 独立提交（或：随批次 1 合并提交）
+
+---
+
+> 验收通过后，在对应任务卡末尾追加 `**验收证据:**`（引用 `ACCEPTANCE.md` 编号并简述结果）再勾选 `[x]`。经用户批准移出或移交下一阶段的未完成卡保持 `[ ]`，并追加 `**未完成处置:**`（写明批准依据、原因和去向）。跨阶段引用须带阶段编号。

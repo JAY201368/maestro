@@ -1,5 +1,21 @@
-# {{PROJECT_NAME}} decisions
+# {{PROJECT_NAME}} 关键决策与技术债账本
 
-Record durable choices, their rationale and downstream consequences. Preserve superseded decisions with an explicit link to the current decision. This project-level record continues across stages.
+> 本文件跨阶段持续保留，只记录“从代码本身很难直接看出来的为什么”以及“刻意延后、需要持续盯住的技术债”。被取代的旧决策保留原文并标注新决策编号。
 
-No decisions recorded yet.
+## 关键架构与产品决策
+
+尚未记录决策。
+
+<!-- 新增决策时参考以下格式，并删除本注释：
+
+### D01 · <决策主题>（YYYY-MM-DD · 状态：生效中）
+- **背景与备选方案：** 面临什么问题，对比过哪几个方案。
+- **最终决定与理由：** 选了什么，为什么这么选（放弃其他方案的原因）。
+- **影响范围与代价：** 影响哪些模块或后续阶段，带来了哪些已知限制。
+-->
+
+## 跨阶段技术债与刻意延后项
+
+| 编号 | 问题描述与产生原因 | 当前影响与风险 | 计划清理时机 / 触发条件 | 状态 |
+| --- | --- | --- | --- | --- |
+| 暂无 | 尚未登记跨阶段技术债。 | — | — | — |

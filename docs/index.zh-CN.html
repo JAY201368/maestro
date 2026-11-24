@@ -85,13 +85,13 @@
     <div class="document-tags"><span>需求</span><span>架构</span><span>任务</span><span>进度</span><span>决策</span><span>证据</span></div>
   </div>
 </div>
-      <div class="routing-header"><h3>为每个任务选择合适的配置</h3><p>复杂度 + 不确定性 + 失败代价 → 模型与推理深度</p></div>
+      <div class="routing-header"><h3>为每个任务选择合适的配置</h3><p>先拆细、写清步骤，默认向下选档；选高配必须举证</p></div>
       <div class="routing-grid">
-        <article><h4>Luna</h4><p>边界清晰的日常工作</p><span class="effort">max</span></article>
-        <article><h4>Sol</h4><p>实现与集成</p><span class="effort">medium · high · xhigh · max</span></article>
-        <article><h4>Astra</h4><p>处理设计上的不确定性，进行跨系统推理</p><span class="effort">medium · high · xhigh · max</span></article>
+        <article><h4>Luna</h4><p>只读调研、纯工具、文案、清理与单测</p><span class="effort">max</span></article>
+        <article><h4>Sol</h4><p>medium 承接契约清晰实现；high+ 处理跨模块与事务</p><span class="effort">medium · high · xhigh · max</span></article>
+        <article><h4>Astra</h4><p>设计不确定性、方案权衡与跨系统攻关</p><span class="effort">medium · high · xhigh · max</span></article>
       </div>
-      <p class="routing-foot">复杂任务可以从更强的配置起步。<a href="https://github.com/JAY201368/maestro/blob/main/references/worker-routing.md">路由规则 ↗</a></p>
+      <p class="routing-foot">确有高复杂度可直接升配，但需说明为何不能拆细降级。<a href="https://github.com/JAY201368/maestro/blob/main/references/worker-routing.md">路由规则 ↗</a></p>
     </section>
     <section class="workflow-section" id="workflow"><div class="wrap">
       <div class="section-heading"><div><p class="eyebrow">总体流程</p><h2>一个阶段如何从需求讨论走到交接</h2></div><p>顺着图往下读。如果任务需要返工，或者队列里还有任务，就沿着回路继续。</p></div>
@@ -116,7 +116,7 @@
       <div class="simple-arrow" aria-hidden="true">→</div>
       <div class="flow-node"><h3>设计架构</h3><p>接口、不变量与失败处理规则</p></div>
       <div class="simple-arrow" aria-hidden="true">→</div>
-      <div class="flow-node"><h3>规划任务图</h3><p>依赖关系、负责人与验收标准</p></div>
+      <div class="flow-node"><h3>规划任务图</h3><p>依赖、代码路径、实施步骤、禁区与验收</p></div>
     </div>
   </div>
   <div class="phase-transition"><span>契约与任务卡准备就绪</span><b aria-hidden="true">↓</b></div>
@@ -148,14 +148,14 @@
   </div>
   <div class="change-rule"><a href="#discussion"><strong>↶ 重大变更或出现新歧义？回到讨论</strong></a><span>重新打开受影响的分支 → 确认修订后的共识 → 更新架构与任务卡 → 继续执行。明确的小改动可以直接沿用已有决策。</span></div>
 </div>
-      <p class="checkpoint-note"><span class="commit-dot" aria-hidden="true"></span> 每次任务验收、工作流建立、实质性变更、讨论交接记录保存或更新，以及归档完成后，各做一次本地 Git 提交。</p>
+      <p class="checkpoint-note"><span class="commit-dot" aria-hidden="true"></span> 核心/高风险任务逐卡本地提交，紧密相关的低中配小卡可按小批次合并提交；工作流建立、实质变更、讨论交接与归档各自独立提交。</p>
     </div></section>
     <section class="context-section wrap" id="context">
       <div class="section-heading"><div><p class="eyebrow">跨越上下文边界</p><h2>换了上下文，工作照样能继续。</h2></div><p>新的执行者会读取当前的契约和交付状态；恢复工作时，会话也会先核对记录与仓库是否一致，然后再继续。</p></div>
 <div class="continuity-map">
   <div class="context-card"><span class="node-label">执行者 A 完成</span><h3>任务结果</h3><p>改动的文件<br>检查结果与证据<br>提出的决策</p></div>
   <div class="context-arrow"><span>主代理<br>评审并记录</span><i class="arrow-line"></i></div>
-  <div class="context-card context-records"><span class="node-label">持久状态</span><h3>项目记录 + Git</h3><p>已确认的需求与契约<br>已验收的工作和阻塞项<br>证据与决策</p></div>
+  <div class="context-card context-records"><span class="node-label">持久状态</span><h3>项目记录 + Git</h3><p>已确认的需求与契约<br>任务看板、阻塞与技术债<br>证据与决策</p></div>
   <div class="context-arrow"><span>对照仓库<br>核对记录</span><i class="arrow-line"></i></div>
   <div class="context-card"><span class="node-label">新的执行者 / 会话</span><h3>上下文已就绪</h3><p>相关文档<br>一份完整的任务卡<br>依赖关系与检查项</p></div>
 </div>

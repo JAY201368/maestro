@@ -1,21 +1,29 @@
-# {{PROJECT_NAME}} — {{STAGE_ID}} progress
+# {{PROJECT_NAME}} — 阶段 {{STAGE_ID}} 进度看板
 
-## Current state
+> 本文件只由主代理更新，目的是让人打开就能在 30 秒内看清：现在走到哪了、卡在哪了、有哪些决策或技术债需要留意。
 
-Stage planning is pending. No implementation or verification is claimed.
+## 进度总览
 
-## Accepted work
+- **当前状态：** 阶段刚初始化，尚未开始实现或验收。
+- **一句话进展与方向：** 请替换为 2–4 句大白话总结当前进展、刚完成了什么、整体方向是否符合预期、下一步立刻做什么。
+- **统计：** 已验收 `0 / 0` · 进行中 `0` · 阻塞 `0` · 待派发 `0`（待合批提交小卡：`0`）
 
-None.
+## 任务状态看板
 
-## Active ownership and attempts
+| 任务卡 | 交付标题 | 执行者配置 | 状态 | 当前进展 / 负责范围简述 | 验收证据 |
+| --- | --- | --- | --- | --- | --- |
+| T01 | 请替换为 | `spec-worker-luna-max` | 待规划 | 待补齐任务卡与依赖 | — |
 
-None. Record task ID, worker identity/profile, owned files, and material correction attempts when dispatched.
+## 当前阻塞项与待用户拍板的决策
 
-## Issues and decisions needed
+- **待用户拍板（影响产品、范围、方向或授权）：** 暂无。
+- **技术与环境阻塞：** 暂无。（出现阻塞时写清：卡在什么具体问题、影响哪几张卡、推荐的解法是什么。）
 
-Complete the stage plan from confirmed requirements. Record any reopened discussion branches, pending investigations and decisions awaiting user input here.
+## 重要方向变更与已知技术债
 
-## Next ready tasks
+- **阶段内方向/方案变更：** 暂无。（发生实质性调整时，用一两句话记清改了什么、为什么改、关联哪条决策。）
+- **已知技术债与遗留瑕疵：** 暂无。（发现但不立即修的问题必须登记于此：描述现象、当前影响、计划在哪张卡或哪一阶段清理。）
 
-Determine after reviewing requirements, contracts and dependencies.
+## 执行与纠错记录（精简）
+
+暂无派发记录。派发后按时间简要记录：卡号、执行者身份与配置、重要返工原因及最终结论（详细命令与输出留在 `ACCEPTANCE.md`，不在此重复粘贴）。

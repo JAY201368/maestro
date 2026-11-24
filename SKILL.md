@@ -1,97 +1,132 @@
 ---
 name: maestro
-description: Clarify user requirements through structured discussion, then plan and deliver software in explicit development stages, with requirement-linked task cards, fresh task workers, dependency-aware parallel execution, proportionate acceptance, and confirmed stage archival. Use for staged project planning, implementation orchestration, resuming delivery, or transitioning an existing project to its next stage.
+description: 通过分轮讨论把需求聊透，再按开发阶段完成架构设计、细粒度任务拆解、向下默认的分级子代理调度、按风险分级的适度验收与确认归档。适用于新项目启动、复杂功能分阶段推进、跨会话续跑，以及把已有项目平滑过渡到下一阶段。
 ---
 
-# Maestro
+# Maestro 编排工作流
 
-Maintain an agreed stage goal, complete task contracts, and evidence sufficient to accept the requested outcome. The main agent owns requirements discussion, planning, dispatch, integration, shared records, and acceptance. Every implementation task gets a fresh worker context. Continue through the authorized milestone without silently reducing scope.
+Maestro 帮助主代理把复杂软件开发拆成**人能看懂、子代理照着就能做、换会话也能续跑**的清晰阶段。
 
-## Enter at the current stage
+**职责边界非常明确：**
+- **主代理（你）**负责：需求澄清、架构设计、拆细任务卡、写清实施步骤与红线、选定执行者档位、把关验收、维护所有共享文档与本地 Git 提交。
+- **执行者（子代理）**负责：每次在全新上下文中只做**一张任务卡**（实现或只读调研），按卡片里的步骤和禁区施工，跑完约定检查并如实回报结果。
+- 围绕已确认的阶段目标持续推进，不能在未获用户同意的情况下悄悄缩减需求范围。
 
-Inspect repository instructions and the worktree, preserving unrelated changes. Read `docs/workflow/current.md` when present, then the mapped stage requirements, architecture, relevant tasks and progress. Read decisions only as needed for the current uncertainty. Existing repositories may map their established paths; never create a competing architecture or task ledger merely to match the defaults.
+## 1. 先判断当前处于哪一步
 
-Choose the applicable operation:
+开工前先看仓库既有规则与当前工作树状态，保留与本次无关的改动。如果存在 `docs/workflow/current.md`，先读它，再顺着映射读取当前阶段的需求、架构、任务卡与进度；决策记录按需要再查。如果仓库本来就有自己的文档路径，直接通过路径映射沿用，不要另起炉灶造一套冲突文档。
 
-- **Clarify requirements** for a new project, new stage, or a change affecting goals, scope, architecture or acceptance. Complete the discussion and obtain confirmation before formal stage initialization or affected orchestration.
-- **Plan a stage** from the confirmed understanding. Design the architecture and task graph, preserving the agreed goals, scope and closure criteria.
-- **Revise within a stage** for changes serving its agreed goals. Amend existing requirements, architecture and affected cards. Ask the user to allocate work outside those goals to this or a later stage. Reopen affected discussion branches for material changes; reuse confirmed conclusions for clear small edits.
-- **Execute or resume** when the stage contracts are stable. Reconcile recorded completion with current files and evidence, then dispatch ready tasks.
-- **Close and transition** when the stage outcome is reached or the user explicitly approves a scope adjustment. Prepare closure and handoff for confirmation, archive after confirmation, then plan the new stage.
+根据现状进入对应入口：
 
-Before a requirements discussion, read [references/requirements-discussion.md](references/requirements-discussion.md). Maestro includes the grilling protocol directly, with dependency-aware question rounds and explicit confirmation of shared understanding. Reuse applicable prior answers and authorization. Stable execution/resumption proceeds from current contracts; newly discovered requirement ambiguity reopens only the affected branches.
+- **澄清需求**：新项目、新阶段，或目标、范围、架构、验收口径发生重大变化时，先走需求讨论并拿到用户确认，再初始化阶段或改写受影响的计划。
+- **规划阶段**：基于已确认的共识设计架构、做必要的代码摸底调研，再拆出可执行任务卡和依赖关系。
+- **阶段内调整**：在既定阶段目标内做改动时，直接修订当前阶段的需求、架构和受影响的任务卡；如果新想法超出了本阶段目标，请用户决定纳入本阶段还是留到下阶段。实质性变更重开受影响的讨论分支，明确的小改动直接沿用既有结论。
+- **执行或续跑**：阶段计划稳定后，先核对文档记录与仓库当前文件、测试证据是否一致，再按依赖顺序派发已就绪的任务卡。
+- **收尾与归档**：阶段目标达成，或用户明确批准调整范围后，整理交接摘要请用户确认；确认后再执行归档，然后规划下一阶段。
 
-For document setup, adaptation or closure, read [references/document-contracts.md](references/document-contracts.md). After shared understanding is confirmed, use the bootstrap script and templates as scaffolding, recording the confirmed requirements before architecture and task planning and filling relevant placeholders before dispatch. User requirements and current repository instructions remain binding. Architecture defines technical contracts; cards implement those contracts. Progress and historical records cannot override them. Resolve material conflicts before dependent implementation.
+进入各环节前，按需阅读对应参考文档：
+- 需求讨论与确认：[references/requirements-discussion.md](references/requirements-discussion.md)
+- 文档结构、写作规范与归档流程：[references/document-contracts.md](references/document-contracts.md)
+- 任务拆解粒度与执行者分级路由：[references/worker-routing.md](references/worker-routing.md)
 
-## Plan executable task contracts
+## 2. 写让人和子代理都一目了然的文档
 
-Each card links its source requirements and specifies ownership, entry points, behavior, inputs/outputs, applicable states, failure/boundary handling, exclusions, dependencies and observable acceptance. Map each acceptance criterion to the cheapest sufficient verification method. Use the task template, keeping simple cards short. Explicitly explain when a normally relevant boundary does not apply.
+**文档同时服务两类读者——“持续把控方向的人类”和“零上下文接手任务的执行者”。** 写任何阶段文档与任务卡时，必须遵守以下表达规范：
 
-Before dispatch, manually check requirement coverage and whether a fresh worker could implement the card without guessing product behavior. Structural validation detects missing fields and dependencies, but semantic completeness remains the main agent's responsibility. Add an independent deliverable as a separate card instead of concealing scope growth.
+1. **通俗自然，拒绝黑话**：统一使用平实清晰的中文（或跟随用户对话语言），仅对代码路径、类名、函数名、配置键、命令保留英文原样。禁止堆砌晦涩的抽象名词串或电报式缩写；凡是引入阶段专有概念，必须先用一句大白话讲清它的实际含义。
+2. **先讲“为什么”和全貌，再列规则**：
+   - `REQUIREMENTS.md` 开头先用几句话讲清为什么要做这一阶段、现状痛点是什么、做完后用户看到什么变化，再展开需求和明确不做的边界。
+   - `ARCHITECTURE.md` 开头先讲核心设计原则与模块分工，再列接口与数据约束。
+   - `PROGRESS.md` 必须维护**一眼可读的任务状态看板**，并单列**当前阻塞项、待用户拍板的决策、重要方向变更和已知技术债**，不要写成一大坨流水账。
+   - `DECISIONS.md` 除了记录关键决策与取舍理由，同时持续跟踪**跨阶段技术债与刻意延后项**。
+3. **禁止悬空指代**：严禁在文档和任务卡里写“沿用既有接口”“按约定文案”“跑相关测试”这类必须翻历史聊天才知道具体指什么的模糊表述，必须写出确切的文件路径、函数/字段名、具体取值和可执行命令。
 
-If design or implementation reveals a requirement ambiguity, pause affected work, return to the relevant discussion branches and confirm the revised understanding. For a technical contract gap within agreed requirements, resolve the decision, update architecture and affected cards, and then continue. Obtain user input for product scope, authorization or materially ambiguous behavior. Reversible technical choices within agreed requirements belong to the main agent.
+文档权威顺序：**用户最新确认的需求与仓库规则 > 项目架构（公共接口与规则） > 阶段任务卡 > 进度与历史记录**。出现实质冲突时，先解决冲突、更新权威文档，再继续下游实现。
 
-## Route and dispatch workers
+## 3. 先摸底、再拆细，写可直接施工的任务卡
 
-Read [references/worker-routing.md](references/worker-routing.md) before selecting a profile. For implementation, record the profile and rationale in the task card and reassess at dispatch using current evidence. Pre-confirmation read-only investigations use the bounded assignment and findings described in the discussion reference. Keep the main session's model and reasoning unchanged.
+规划任务卡时，**不要把“边看代码边摸索设计”和“确定性写代码/写测试/清理”揉在一张巨无霸卡里**。
 
-Prefer the exact installed custom role with `fork_turns: "none"`. For implementation, supply the absolute repository root, mapped document paths, complete card, instantiated prompt, explicit owned files/modules, exclusions, dependency evidence, selected model/effort and verification plan. Tell workers they share the worktree and must preserve others' edits.
+1. **先用只读调研消化不确定性**：如果主代理对现有文件的具体路径、函数签名、调用链或测试入口还不清楚，先派 `spec-worker-luna-max` 做一次有界的只读调研，把真实代码锚点摸清后再写架构和任务卡。
+2. **按决策密度与复杂度拆小卡**：
+   - 把高复杂度核心逻辑（状态机、事务并发、关键安全边界、架构改造）与周边确定性工作拆开。
+   - 常规情况下，一张实现卡应聚焦单一职责，尽量控制在约 **1–6 个核心文件**（含对应测试）的改动范围内；如果发现一张卡同时横跨“迁移/存储 + 核心引擎 + 调度接入 + UI + 清理旧文件”，必须先拆卡。
+   - 以下确定性切片应主动拆出，交给 `luna-max` 或 `sol-medium` 完成：只读代码调研、纯工具函数与共享类型、UI 静态文案与配置微调、死代码清理与机械迁移、契约已定接口的常规实现、独立脚本、按明确规格补写单元测试/文档。
+3. **每张任务卡必须是一份“零脑补施工单”**：
+   - 使用 [assets/templates/TASKS.md](assets/templates/TASKS.md) 的标准结构，写清：**依赖、执行者、路由理由、关联需求、任务背景、修改范围（确切文件路径/符号与排除项）、实施步骤（分步措施）、禁区与约束（防跑偏红线）、边界与异常、逐条验收标准、验证方式（具体命令与预期结果）**。
+   - 不要为了图省事把卡片压缩成几行抽象概括。写完后先过一遍 `validate_workflow.py`，再人工复核两件事：① 所有需求是否都被覆盖；② 一个全新上下文的子代理拿到这张卡，是否**不用猜产品行为、不用猜改哪个文件、不用猜跑什么命令**就能直接完工。
 
-If a role is not exposed or its exposed instructions are stale, use a fresh general worker with the exact model/effort and the installed profile's full instructions when overrides are supported. Never assume an override changes a fixed custom role. If the exact configuration cannot be dispatched, report the capability gap and seek a supported route. If no subagent mechanism exists, explain the limitation and implement directly only with user authorization. Never substitute user-owned sidebar chats for workers. Report configured settings separately from observed runtime metadata.
+如果实施中途发现产品需求有歧义，立刻暂停受影响的任务，重开对应讨论分支向用户确认；如果只是既定需求内的技术接口缺口，由主代理拍板、更新架构与受影响任务卡后再继续。
 
-An implementation worker owns exactly one task ID and may not delegate. Same-task corrections may return to that worker while it is available, including after its completion report and before acceptance. Changing profile requires ending the old worker's activity and creating a fresh worker. Accepted, abandoned or blocked workers are retired; reopened tasks get new workers.
+## 4. 向下默认分级路由与派发执行者
 
-## Schedule independent work
+选择执行者前必须先读 [references/worker-routing.md](references/worker-routing.md)。核心原则是**“先拆细、先写清，默认向下选；选高配必须举证”**：
 
-Default to at most **two implementation workers** concurrently, bounded by runtime capacity. A higher cap may be agreed during stage planning. Dispatch only tasks with completed, evidenced prerequisites and independent owned files/contracts. Shared-file edits, coupled interface changes or tasks without independent acceptance proceed serially. Read-only investigation may accompany work within runtime limits and without conflicting writes.
+- 在任务卡里写明 **执行者** 与 **路由理由**；真正派发前结合最新代码状态再复核一次。
+- **凡是选用 `spec-worker-sol-high` 及以上配置，必须在路由理由里说明两点**：① 这张卡无法消除的核心复杂点是什么；② 为什么不能通过拆细任务或补清实施步骤交给 `luna-max` / `sol-medium`。
+- 规划完整个阶段后，看一眼 `TASKS.md` 顶部的模型分层概览：如果包含 3 张及以上任务卡的常规阶段里，`luna-max` 和 `sol-medium` 一张都没有，必须重新审视任务是否拆得过粗。
+- 主会话自身的模型和推理深度保持不变。
 
-The main agent owns all shared workflow documents. Workers report results and proposed decisions; they do not update shared architecture, task status, progress, acceptance records or decision logs. Assign integration responsibility and identify the checks needed after concurrent work joins. Preserve other work already in the tree, and use isolated worktrees when shared paths cannot otherwise be kept independent.
+**派发规范：**
+- 优先使用已安装且指令最新的自定义角色，并以全新上下文（`fork_turns: "none"`）启动。如果角色缺失或缓存指令过旧，且运行环境支持精确覆盖，可使用全新通用 worker，显式指定完全一致的模型、推理深度并附上完整安装版指令；若连精确配置都无法派发，如实向用户报告能力缺口并协商替代方案，绝不用其他固定模型角色冒充，也绝不拿用户自己的侧边对话充当 worker。
+- 派发实现任务时，务必提供：仓库绝对路径、映射文档绝对路径、完整任务卡、实例化后的派发提示（含**本阶段实现红线**）、精确负责文件与排除范围、前置依赖证据摘要、选定的配置以及具体验证命令，并提醒 worker 共享工作区、保留他人改动。
+- **一卡一执行者，禁止递归派发**：每个实现 worker 只负责一张卡，不得再派发子代理。同一任务验收前的局部返工可交回原 worker；一旦更换执行者档位，必须结束旧 worker，启用全新上下文的新 worker。已验收、放弃或长期阻塞的 worker 应退役，重新打开的任务必须派新 worker。
+- 在回报中，始终把“配置的目标档位/模型/推理深度”与“运行时实际观测到的元数据”分开说明。
 
-Use completion notifications or passive waits that yield on completion/user input, within host limits. Estimate a completion window and avoid status polling during it. After the window, query once if needed, then respond to concrete progress or blockers. Do not treat silence alone as failure.
+## 5. 并发调度与文档所有权
 
-## Accept with reusable evidence
+- **并发上限**：默认最多同时运行 **2 个实现执行者**（受运行环境上限约束）；若阶段规划时与用户另行约定更高并发，记录在计划中。
+- **并行前提**：只有前置依赖已验收有证、且负责文件和接口契约完全互不重叠的任务，才允许并行；会改动同一文件、涉及联动接口或无法独立验收的任务必须串行。只读调研可在不产生写冲突的前提下与实现任务并行。
+- **共享文档唯一写入权**：所有共享工作流文档（`ARCHITECTURE.md`、`DECISIONS.md`、`REQUIREMENTS.md`、`TASKS.md`、`PROGRESS.md`、`ACCEPTANCE.md`、`PROMPT_TEMPLATE.md`）**只由主代理修改**。执行者只在回报中提交发现、结果和建议决策，绝不自行勾选任务或改写共享账本。
+- **等待纪律**：优先依赖系统完成通知或被动等待，结合任务体量预估完成窗口，在窗口内不要反复轮询状态；超时后再查询一次并根据实际进展或阻塞做处理，不要仅凭沉默判定失败。
 
-Select verification by impact:
+## 6. 按风险分级验收与复用证据
 
-- **L0** text/cosmetic changes — inspect the diff and whitespace, plus paths/links when moved. No default tests, build or browser.
-- **L1** localized behavior — directly relevant checks.
-- **L2** cross-component/stateful behavior — targeted tests and relevant type/build checks where warranted.
-- **L3** security, authentication, migrations or critical flows — comprehensive relevant checks, including integration/E2E where appropriate.
+按改动影响面选择**最低但足以证明正确**的验证级别，不搞一刀切的重型全量测试：
 
-Visual checks apply when visual correctness or interaction is central, cheaper checks cannot establish the outcome, or the user requests them. Follow the project's agreed layout scope. Existing applicable repository quality gates still apply.
+- **L0（纯文本/样式微调/文档与链接）**：检查 diff、空白字符，以及移动后的本地路径与链接；默认不跑测试、构建或浏览器。
+- **L1（局部行为改动/纯函数/单模块）**：运行直接相关的单元测试或聚焦检查。
+- **L2（跨组件或有状态逻辑）**：运行定向单元/集成测试，以及必要的类型检查、Lint 或局部构建。
+- **L3（安全、鉴权、数据库迁移、并发事务或核心主链路）**：运行隔离环境契约/集成测试、必要的端到端检查与构建验证。
 
-Workers perform the planned checks and report commands, results, tested revision or file state, relevant environment and coverage. The main agent reviews the diff and acceptance evidence. Reuse evidence while the relevant code, dependencies, configuration and environment remain applicable. Rerun only for a concrete reason such as changed covered files, incomplete evidence, integration interference, a stale environment, or a critical flow requiring independent confirmation. Record that reason. Do not rerun checks solely because control moved from worker to main agent or from task to stage acceptance.
+仅当视觉呈现或页面交互本身是核心目标、更便宜的检查无法证明结果、或用户明确要求时，才执行浏览器视觉检查，并遵守项目约定的布局范围。仓库既有的必过质量门禁仍须遵守。
 
-Record concise evidence in the stage acceptance ledger and reference it from completed cards. Main-agent inspection can itself be evidence. Preserve failures, skips and external-service limitations truthfully. Only the main agent marks a task accepted after every criterion is evidenced. Stop adding verification once evidence is sufficient, and continue any remaining implementation required by the agreed scope.
+**证据审查与复用：**
+- 执行者跑完约定检查后，汇报具体命令、原始结果、测试时的文件状态/基线、关键环境版本及覆盖范围。
+- 主代理必须独立审查代码 diff 与证据，确认每条验收标准都有据可依后，才能将任务标记为已验收。
+- **有效证据直接复用**：只要被测代码、依赖、配置和环境没变，就不要因为“控制权从 worker 交回主代理”或“从单卡验收进入阶段收尾”而无故重跑一遍相同的耗时检查。只有出现具体风险（如改了覆盖文件、证据不全、并行集成可能互相干扰、环境过旧，或关键主链路需要主代理独立复核）时才重跑，并记录重跑原因。
+- 把简明证据记入 `ACCEPTANCE.md`，并在对应任务卡填入 `**验收证据:**` 锚点。失败项、跳过项和外部环境限制必须如实保留，严禁把跳过的检查标成通过。
 
-## Commit accepted tasks and workflow milestones
+## 7. 提交已验收工作与流程里程碑
 
-The main agent must create one separate local Git commit at each of these points:
+主代理负责在以下时机创建范围清晰的本地 Git 提交：
 
-- **Task acceptance** — after accepting each task and updating its task card and acceptance ledger, commit the accepted changes and the corresponding records before moving on from that acceptance.
-- **Workflow or stage initialization** — commit the prepared workflow records before the first implementation dispatch.
-- **Workflow changes** — commit material revisions to scope, requirements, architecture contracts, dependencies or acceptance criteria before dependent work resumes. Commit each completed save or update of a requirements discussion handoff when it is written.
-- **Stage archival** — commit the archive and the updated current-stage pointer after the user confirms closure and archival completes, before initializing the next stage.
+- **工作流或阶段初始化**：准备好阶段文档且校验通过后、首次派发实现任务前，独立提交一次。
+- **实质性流程变更**：需求范围、架构核心接口、依赖关系或验收标准发生实质调整后，在下游工作恢复前独立提交；每次保存或更新未完成的需求讨论交接记录时，独立提交。
+- **任务验收提交（支持核心卡独立提交 + 低配小卡合批提交）**：
+  - **高风险或核心任务卡**（通常为 `sol-high` 及以上，或涉及数据库迁移、公共契约切换、大范围重构的卡）：每验收完一张卡并更新任务卡、进度看板和验收账本后，单独做一次本地 Git 提交。
+  - **紧密相关的低中配小卡**（通常为 `luna-max` / `sol-medium`，如同一子里程碑下的“纯工具函数 + 单元测试 + 文档同步”或连续 2–4 张小型清理/文案/适配卡）：允许在计划中划为一个**提交批次**。批次内每张小卡仍独立派发、独立审查并即时登记证据，等该批次小卡全部验收后**合并做一次本地 Git 提交**（提交信息列明全部卡号，如 `T02–T04`）。若批次中途发生阻塞或需要暂停阶段，先提交已验收的部分，避免已验收代码长期悬空。
+- **阶段归档**：用户确认收尾且归档脚本执行成功后、初始化下一阶段前，独立提交一次。
 
-Review the staged diff and include only changes belonging to that task or milestone. Preserve unrelated work and exclude secrets. Follow applicable user and repository authorization rules. Push and publication require separate authorization. If a required commit is blocked, report the specific blocker and the affected task or milestone.
+每次提交前核对暂存区 diff，只纳入属于本次任务或里程碑的文件，排除临时私有文件、密钥与无关改动。`git push`、部署和对外发布永远需要用户另行授权。若提交受阻，明确报告原因和受影响的任务。
 
-## Diagnose corrections
+## 8. 失败诊断与纠错
 
-Classify the failure before retrying:
+验收未通过时，先定性根因再决定怎么修，**禁止盲目升级模型掩盖写得不清楚的卡片**：
 
-- Unclear requirements or acceptance — repair the card and obtain product decisions where needed.
-- Environment or check failure — repair the environment or verification method.
-- Local implementation error — send a focused same-task correction with the same profile.
-- Reasoning failure or repeated lack of progress — reconsider the approach and profile using the routing reference.
+- **需求或验收不清**：先补齐任务卡，涉及产品取舍的找用户确认，再继续。
+- **环境或检查方式故障**：先修测试环境、夹具或验证命令本身。
+- **局部实现失误**：用原执行者（同档位）做一次聚焦的同任务返工，指出具体文件和问题。
+- **推理深度不足或连续原地打转**：按 [references/worker-routing.md](references/worker-routing.md) 重新评估实现方案与执行者配置。
 
-After two unsuccessful corrections for the same cause, the main agent must re-diagnose and change the approach or configuration before another attempt. A retry owns the same task ID. Do not escalate models to compensate for missing requirements, and do not advance failed dependencies.
+**二次熔断规则**：同一原因连续返工两次仍未解决时，主代理必须停下来重新诊断，调整拆解方案、补充前置调研或更换配置后再试，不得继续盲目重复。前置未通过验收的依赖卡，绝不放行下游任务。
 
-## Close, archive and start the next stage
+## 9. 阶段收尾、归档与进入下一阶段
 
-Review all stage requirements against accepted tasks and valid evidence. Supplement only missing stage-level integration checks. Every unfinished requirement needs the user's explicit scope adjustment and destination before closure; retain its unfinished status.
+1. 对照 `REQUIREMENTS.md` 逐条核对所有需求、任务状态与有效证据，只补充缺失的阶段级集成验证。
+2. 所有未完成的需求在收尾前都必须得到用户明确的范围调整意见与去向（如移交下一阶段或确认放弃），对应任务卡保持 `[ ]` 未勾选，并写明 `**未完成处置:**`。
+3. 编写阶段交接摘要，写清：已交付能力、接口/数据/环境变化、已知问题与**遗留技术债**、未完成需求的批准去向、证据的剩余适用性，以及下一阶段规划建议。
+4. 把完整收尾摘要交给用户确认。**只有在用户明确确认后**，才能按 [references/document-contracts.md](references/document-contracts.md) 运行归档脚本。归档会保留完整阶段文档与项目级快照；若归档中途中断，用相同阶段名恢复重试，绝不覆写历史归档。
+5. 进入下一阶段时，先针对新需求以及上一阶段交接的**每一条遗留问题和技术债**开展需求讨论并确认共识，再初始化全新命名的阶段目录。项目级架构、决策与仓库协作约定跨阶段延续。
 
-Prepare a handoff covering delivered capabilities, contract/data/environment changes, known issues, unfinished requirements and their approved destinations, evidence and its remaining applicability, and recommendations for next-stage planning. Present the stage summary for user confirmation. Only after confirmation run archival as documented in the reference. Preserve the full stage records and project-level snapshots. Resume an interrupted archive using the same stage identity rather than overwriting history.
-
-The new stage receives a new requirements/task/progress/acceptance/prompt set. Project architecture, decisions and instructions continue as the current system context. Review every inherited issue and deferred requirement explicitly during the new stage’s requirements discussion, confirm shared understanding, then initialize and plan that stage.
-
-Report the delivered outcome, changed files, verification actually performed, unfinished items and next step. Do not claim runtime model validation from a parsed configuration or structural validation as product acceptance.
+每次向用户阶段性汇报时，清晰交代：已交付结果、改动文件、实际执行的验证、未完成项与技术债/阻塞项，以及下一步计划。绝不把配置解析成功说成运行时已验，也绝不把结构脚本通过当成产品验收通过。

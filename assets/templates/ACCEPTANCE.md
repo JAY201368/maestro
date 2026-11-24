@@ -1,5 +1,20 @@
-# {{PROJECT_NAME}} — {{STAGE_ID}} acceptance evidence
+# {{PROJECT_NAME}} — 阶段 {{STAGE_ID}} 验收证据账本
 
-The main agent records actual evidence here. Each record identifies task/criterion coverage, command or inspection, result, tested revision or file state, relevant environment, and invalidation conditions. Completed cards reference evidence IDs. Record concrete reasons for reruns and the applicability of reused evidence.
+> 本文件只由主代理维护，忠实记录每一项通过、失败或跳过的实际检查结果。已验收任务卡通过 `**验收证据:**` 锚点引用此处条目。
 
-No verification has been recorded yet.
+尚未记录任何验收证据。
+
+<!-- 录入证据时可参考以下清爽格式，并删除本注释：
+
+## T01-E1 · 任务简短标题
+
+- **覆盖范围：** T01 A1、A2（对应代码基线 `<commit>` + 本卡改动）
+- **执行者与元数据：** 配置 `spec-worker-luna-max`（`gpt-6-luna / max`）；运行时元数据：<实际观测值或“工具未返回”>
+- **运行环境：** <OS / 运行时版本 / 隔离库或替身说明>
+- **执行命令与结果：**
+  ```bash
+  <具体命令>
+  ```
+  实际结果：<通过项数 / 失败项 / 跳过项与原因 / 人工 diff 审查结论>
+- **证据复用与失效条件：** 若改动 `<涉及路径>` 或相关依赖/环境，须重验对应条目；重跑时注明具体重跑原因。
+-->

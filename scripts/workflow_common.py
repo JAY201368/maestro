@@ -14,7 +14,7 @@ TEMPLATES = dict(zip(FILE_KEYS, (
     "REQUIREMENTS.md", "TASKS.md", "PROGRESS.md", "ACCEPTANCE.md",
     "PROMPT_TEMPLATE.md", "ARCHITECTURE.md", "DECISIONS.md", "AGENTS.md",
 )))
-FIELD = re.compile(r"^\*\*([^*:\n]+):\*\*[ \t]*(.*)$", re.MULTILINE)
+FIELD = re.compile(r"^\*\*([^*：:\n]+)(?:[：:]\*\*|\*\*[：:])[ \t]*(.*)$", re.MULTILINE)
 
 
 def safe_path(repo: Path, value: str) -> Path:

@@ -1,29 +1,41 @@
-# {{PROJECT_NAME}} — {{STAGE_ID}} requirements
+# {{PROJECT_NAME}} — 阶段 {{STAGE_ID}} 需求说明
 
-## Confirmed stage goal
+## 一句话目标与背景
 
-TODO agreed outcome.
+请替换为：用 2–4 句通俗中文说明——为什么要做这个阶段、当前系统最主要的痛点是什么、本阶段做完后用户或系统会得到什么直观变化。
 
-## Confirmed discussion outcome
+## 确认依据与讨论共识
 
-TODO summarize key scenarios, relevant failure/boundary behavior, constraints, agreed scope choices, and observable acceptance. Preserve explicit user requirements and link their sources.
+- **确认来源：** 请替换为具体的用户确认消息/时间及确认覆盖的范围。
+- **核心共识摘要：** 请替换为本次讨论拍板的关键业务判断、交互或技术方向结论。
 
-## Confirmation basis
+## 核心场景与预期行为
 
-TODO identify the user confirmation source and the exact summary/scope it covers. Reuse applicable existing confirmation. Record revised confirmation when material changes reopen discussion.
+请替换为 2–5 个直观的使用场景（同时覆盖正常流程与关键异常/边界情况），让非一线代码阅读者也能看懂系统该怎么表现：
 
-## Source and scope
+1. **场景一（正常主流程）：** 请替换为具体输入、系统动作与用户看到的结果。
+2. **场景二（关键边界/异常）：** 请替换为触发条件与明确的处理结果（禁止写模糊的“妥善处理”）。
 
-TODO link original requirement sources and record included requirement IDs, behavior, and agreed exclusions.
+## 需求清单与任务覆盖
 
-## Closure criteria
+| 需求编号 | 要达成的具体结果与可观察判断标准 | 承担任务卡 |
+| --- | --- | --- |
+| R01 | 请替换为清晰、可验证的结果描述，不堆砌抽象黑话。 | T01 |
 
-TODO observable conditions for closing this stage.
+## 明确不做（范围排除）与硬约束
 
-## Coverage
+- **本阶段明确不做：** 请替换为与用户确认后排除在外的事项，防止开发过程中范围蔓延。
+- **必须遵守的约束与授权红线：** 请替换为兼容边界、性能/耗时上限、隐私安全要求，以及涉及外部付费/发布/推送时的授权前提。
 
-TODO requirement IDs mapped to task IDs and acceptance criteria.
+## 阶段完成标准
 
-## Inherited issues and transferred requirements
+1. 请替换为可直接逐条核对的客观收尾条件（例如所有核心场景均有实测/回归证据）。
+2. 所有未完成项均已获用户明确范围调整并登记去向，核心技术债已记入进度或决策账本。
 
-TODO review each previous-stage handoff item and record its destination or planning decision. For the first stage, state that no previous stage exists.
+## 继承遗留与已知技术债处置
+
+请替换为对上一阶段交接单中每一条遗留问题、未完成需求与技术债的逐项安排（如果是首个阶段，直接说明“本阶段为首个阶段，无上一阶段遗留项”）：
+
+| 来源编号 | 遗留问题 / 技术债说明 | 本阶段处置结论 |
+| --- | --- | --- |
+| 无 | 若为首阶段，请直接删除本表并注明无上阶段遗留。 | — |

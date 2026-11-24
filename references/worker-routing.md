@@ -1,31 +1,67 @@
-# Worker routing
+# 任务拆解与执行者分级路由指南
 
-## Installed profiles
+分级调度的目的，是**把不确定性和设计工作留在主代理，把清晰确定的实现交给性价比最高、最稳定的执行者**。实践证明：如果把大块混杂任务打包成一张粗卡、又不写具体步骤，任何主代理都会本能地把所有任务全推给 `sol-high` 甚至 `sol-xhigh`，既浪费额度，又容易因为上下文过载而跑偏。
 
-| Profile | Model | Reasoning | Default fit |
+## 1. 先拆细，再路由（反通胀铁律）
+
+在给任务卡分配执行者之前，先按下面三步自检：
+
+1. **先用 `luna-max` 摸清现状**：如果对目标文件、函数签名或测试方式还不确定，先派 `spec-worker-luna-max` 做一次只读调研，把真实路径和代码现状写进架构与任务卡，不要让实现者一边猜一边写。
+2. **把“核心难题”和“确定性工作”剥离**：不要因为一个需求里包含 20% 的复杂状态机，就把剩下 80% 的纯工具函数、UI 文案改动、单测补齐、死代码清理、独立脚本和文档更新全塞进同一张高配大卡里。
+3. **控制单卡体量**：单张实现卡聚焦单一职责，常规目标在 **1–6 个核心文件**（含直接测试）以内。如果一张卡动辄横跨 10+ 文件或多个无关子系统，优先拆卡而不是强行升配。
+
+## 2. 九个内置执行者档位与适用边界
+
+| 执行者配置 | 模型 | 推理深度 | 默认适用任务（按具体特征判断） |
 | --- | --- | --- | --- |
-| spec-worker-luna-max | gpt-6-luna | max | Bounded routine implementation, mechanical changes, focused investigation |
-| spec-worker-sol-medium | gpt-6.2-sol | medium | Contract-defined adapters and moderate integration |
-| spec-worker-sol-high | gpt-6.2-sol | high | Cross-module logic, state consistency, security-sensitive implementation |
-| spec-worker-sol-xhigh | gpt-6.2-sol | xhigh | Multiple constraints, difficult debugging, longer implementation reasoning |
-| spec-worker-sol-max | gpt-6.2-sol | max | Deep implementation or fault isolation with a defined scope |
-| spec-worker-astra-medium | gpt-6.2-astra | medium | Significant design uncertainty and synthesis across alternatives |
-| spec-worker-astra-high | gpt-6.2-astra | high | Complex architecture, cross-system reasoning, difficult interaction or visual problems |
-| spec-worker-astra-xhigh | gpt-6.2-astra | xhigh | Several coupled difficult reasoning factors |
-| spec-worker-astra-max | gpt-6.2-astra | max | Stage-critical difficult problems with high error consequences and deepest reasoning needs |
+| `spec-worker-luna-max` | `gpt-6-luna` | `max` | 只读代码与环境调研；边界清晰的局部改动；纯函数/类型/常量模块；UI 静态文案与配置调整；按明确规格补写单元测试；死代码清理、机械迁移与文档同步 |
+| `spec-worker-sol-medium` | `gpt-6.2-sol` | `medium` | 契约和实施步骤都已写清的标准功能实现；常规前后端接口对接；范围明确的局部 bug 修复；2–6 个文件内无复杂并发/事务耦合的模块开发与常规集成测试 |
+| `spec-worker-sol-high` | `gpt-6.2-sol` | `high` | **拆细写清后仍存在**的跨模块状态联动、数据库迁移与事务一致性、权限/安全敏感逻辑、较复杂的前后端或第三方接口集成 |
+| `spec-worker-sol-xhigh` | `gpt-6.2-sol` | `xhigh` | 强耦合的核心引擎/状态机、多约束并发恢复与锁竞争、难以复现的疑难故障定位、长链条复杂逻辑实现 |
+| `spec-worker-sol-max` | `gpt-6.2-sol` | `max` | 范围明确但极度依赖深度代码推理的疑难故障隔离或复杂核心实现 |
+| `spec-worker-astra-medium` | `gpt-6.2-astra` | `medium` | 存在明显设计不确定性、需要综合比较多个备选方案的架构或接口调研/原型 |
+| `spec-worker-astra-high` | `gpt-6.2-astra` | `high` | 复杂跨系统架构设计、相互制约的多目标权衡、棘手的交互或视觉综合难题 |
+| `spec-worker-astra-xhigh` | `gpt-6.2-astra` | `xhigh` | 同时叠加多种高难约束与跨系统耦合的深度攻关 |
+| `spec-worker-astra-max` | `gpt-6.2-astra` | `max` | 阶段最关键、出错代价极高、需要最深推理能力的极少数核心难题 |
 
-These are routing defaults, not benchmark claims. Select the lowest-cost configuration sufficient for the actual task, weighing complexity, uncertainty, error consequences and known performance. Luna stays at max. Sol uses gpt-6.2-sol. Astra may be selected on first dispatch at any installed level. No lower-profile failure is required. Ultra profiles are outside this configuration.
+> 以上为路由默认建议，而非模型跑分声明。`luna` 固定在 `max`；`sol` 使用 `gpt-6.2-sol`；`astra` 在确实存在高设计不确定性时可直接起手选用，无需先让低档失败。本套配置不包含 Ultra 档位。
 
-For implementation tasks, record **Worker** and **Routing rationale** in the card during planning. Reassess before dispatch and update them if current evidence warrants another choice. Explain why greater reasoning depth or a different model is useful for this task; file count or task title alone is insufficient. Investigation and design tasks may use these profiles with explicitly read-only ownership and concrete outputs. Before stage initialization, give each fact investigation a distinct identifier, bounded question, relevant paths, profile/rationale and required findings. Its assignment replaces the implementation card and prompt template. Retain relevant findings in the conversation or discussion handoff until confirmed requirements can incorporate them.
+## 3. 向下默认与“选高配必举证”门禁
 
-## Correction and escalation
+- **默认先问低中配能不能接**：写完一张详实的任务卡后，按 `luna-max → sol-medium → sol-high → sol-xhigh/max / astra` 的顺序自下而上判断。只要卡里已经写清了文件路径、实施步骤、边界值和验收命令，并且不涉及复杂并发/事务/安全/强耦合状态，**就应该交给 `luna-max` 或 `sol-medium`**。
+- **选用 `sol-high` 及以上时的硬要求**：必须在任务卡的 `**路由理由:**` 中同时写清两件事：
+  1. 这张卡真正不可消除的高复杂点或高风险点是什么；
+  2. **为什么不能通过继续拆细任务或补清实施步骤降级到 `luna-max` / `sol-medium`**。
+  （仅写“涉及多个文件”或复述任务标题，不构成升级理由。）
+- **全阶段健康分布自检**：规划完整个 `TASKS.md` 后，检查顶部的模型分层概览。在常规 3 张卡以上的开发阶段里，通常应有相当比例（常见为 40%–75%）的调研、工具、适配、UI 文案、清理、测试与文档任务落在 `luna-max` / `sol-medium`。如果全阶段 `luna-max` 和 `sol-medium` 占比为 0%，校验脚本会发出警告，主代理必须复核拆卡粒度与任务细化程度。
+- **派发前再复核**：前期卡片落盘后，若上游调研或前置卡使某项任务变得比预期更明确（或更复杂），在派发前直接更新该卡的 `执行者` 和 `路由理由`。
 
-Diagnose requirement, environment, implementation and reasoning failures separately. A small error normally receives a focused correction on the same task/profile. Two unsuccessful corrections for the same cause require a main-agent reassessment and a changed approach or configuration. There is no mandatory linear ladder between models or efforts.
+## 4. 只读调研任务的派发方式
 
-Switch profile only in a fresh worker after ending the previous worker's activity. Supply the original contract, current worktree state, failed evidence and revised approach. For implementation, the main agent records the attempt and rationale in stage progress/acceptance records without duplicating long logs. Pre-confirmation investigations retain this information with their discussion findings. Never reuse a worker for another task ID.
+阶段初始化前或规划阶段需要查证代码/环境事实时，可直接使用上述档位（默认首选 `spec-worker-luna-max`，跨系统综合评估可选 `astra`）派发只读调查。
 
-## Runtime configuration
+只读调查不需要正式实现任务卡，但派发指令必须包含：
+1. 独立调查编号（如 `INV-01`）；
+2. 要查清的具体问题清单；
+3. 重点查阅的文件/目录路径与只读禁区（严禁修改仓库任何文件）；
+4. 期望回报的格式（精确文件路径、行号或函数名、事实依据，区分已核实事实与未知缺口）。
 
-Personal profiles live at `~/.codex/agents/spec-worker-*.toml`. Use the exact exposed custom role if its instructions match the installed version. If a role is missing or cached with old instructions, use `agent_type: "default"`, `fork_turns: "none"`, exact `model` and `reasoning_effort`, and include the complete installed developer instructions when runtime overrides are available. Fixed-model custom roles cannot emulate another profile.
+调查结论由主代理吸收并沉淀到对话共识、`ARCHITECTURE.md` 或任务卡里。
 
-Report configured profile/model/effort separately from observed runtime metadata. Supported effort lists and successful TOML parsing establish configuration compatibility only. The main session's model and reasoning stay unchanged. Workers do not recursively delegate, update shared workflow records, or accept their own task.
+## 5. 失败诊断、返工与升级规则
+
+任务验收失败时，**先归类根因，绝不把卡片写得含糊当成模型不够强**：
+
+1. **需求或卡片缺漏**：先补全任务卡或向用户确认产品决策，再重试——不要靠升模型来猜需求。
+2. **环境、依赖或测试脚本故障**：先修复环境或检查方法。
+3. **局部实现疏漏**：仍交回**原执行者（同档位）**做聚焦返工，指明具体文件、失败输出和预期行为。
+4. **推理深度不足或连续卡壳**：同一原因连续两次返工仍无实质进展时，主代理必须暂停，重新审视是否该拆小任务、修改实现思路，或更换更高档位。升级没有僵化的逐级爬梯要求，按实际根因直接选对档位即可。
+
+**更换档位纪律**：切换执行者档位必须先结束旧 worker 的活动，**新开一个全新上下文的 worker**，并把原任务卡、当前工作树真实改动状态、失败证据和调整后的思路完整交给新 worker。主代理在 `PROGRESS.md` 简明记录返工与换档原因，不粘贴冗长日志。任何 worker 绝不可复用到另一张任务卡。
+
+## 6. 运行时配置与元数据说明
+
+- 个人执行者配置安装在 `~/.codex/agents/spec-worker-*.toml`。
+- 派发时优先调用暴露的同名自定义角色（确认其指令与仓库最新版一致）；若角色缺失或缓存旧指令，在运行时支持覆盖的前提下改用 `agent_type: "default"`、`fork_turns: "none"`、精确的 `model` 与 `reasoning_effort`，并完整注入最新安装版的 `developer_instructions`。固定模型角色无法通过参数伪装成别的模型。
+- 始终把“配置的目标档位/模型/推理深度”和“工具实际返回的运行时元数据”分开汇报。TOML 解析成功只说明配置格式合法，不代表运行时真的跑了对应模型。
+- 执行者永远不得递归派发、不得修改共享工作流文档、不得自行宣布任务验收通过。

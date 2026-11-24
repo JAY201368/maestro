@@ -82,7 +82,7 @@ def main() -> int:
                 atomic_text(destination, contents[key])
         if not args.dry_run:
             write_index(repo, fields)
-        print("Record the confirmed discussion outcome, then complete architecture and task contracts before dispatch")
+        print("请先将已确认的需求共识写入 REQUIREMENTS.md，补齐架构与具体任务卡后，运行 validate_workflow.py 检查结构与质量警告，再开始派发。")
         return 0
     except (ValueError, OSError, json.JSONDecodeError) as error:
         print(f"ERROR {error}")

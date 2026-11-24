@@ -43,36 +43,34 @@ The main agent maintains the architecture and dependency plan, dispatches bounde
 - **Execute** dependency-ready tasks with a fresh worker each time. Diagnose failed acceptance and retry the same task. Record and commit accepted work, then select the next ready task.
 - **Close** the stage after reviewing its outcomes and resolving unfinished requirements through completion or an explicitly approved scope change. Confirm closure, archive the handoff, and plan the next stage.
 
-The main agent creates one scoped local Git commit for each accepted task, each workflow or stage setup, each material workflow change, each saved or updated discussion handoff, and each completed stage archive.
+The main agent creates one scoped local Git commit for each workflow/stage setup, each material workflow change, each saved or updated discussion handoff, and each completed stage archive. For task acceptance, core or high-risk cards commit individually, while tightly related low/mid-tier small cards (`luna-max` / `sol-medium`) may commit together as a planned mini-batch to reduce orchestration overhead.
 
 ## How execution stays coordinated
 
-The main agent owns architecture decisions, scheduling, shared records, integration, and final acceptance. Each worker owns one task and reports its result against the agreed criteria. Independent tasks can run in parallel, with a default limit of two implementation workers. Coupled work follows its dependency order.
+The main agent owns architecture decisions, upfront codebase fact-finding, fine-grained task slicing, routing, shared records, integration, and final acceptance. Each worker owns one task card with explicit file paths, step-by-step implementation actions, and anti-drift guardrails. Independent tasks can run in parallel, with a default limit of two implementation workers. Coupled work follows its dependency order.
 
-Worker selection considers complexity, uncertainty, and the consequences of failure. The bundled configurations are:
+Routing follows a **slice-first, default-downward, justify-escalation** discipline—actively offloading read-only investigations, pure utility modules, UI copy tweaks, dead-code cleanup, unit tests, and contract-defined implementations to lower tiers instead of defaulting everything to `sol-high+`. The nine bundled Chinese worker profiles carry tier-differentiated instructions:
 
 | Model | Reasoning levels | Typical work |
 | --- | --- | --- |
-| Luna | max | Bounded routine implementation and focused investigation |
-| Sol | medium · high · xhigh · max | Defined implementation, integration, state handling, and difficult debugging |
-| Astra | medium · high · xhigh · max | Design uncertainty, cross-system reasoning, and coupled architectural problems |
+| Luna | max | Read-only codebase investigation, pure utility/type modules, UI copy/config tweaks, dead-code cleanup, unit tests, and doc sync |
+| Sol | medium · high · xhigh · max | `medium` for contract-defined standard features & adapters; `high+` for cross-module state consistency, transactional/security logic, and hard debugging |
+| Astra | medium · high · xhigh · max | Design uncertainty, tradeoff synthesis, cross-system architecture, and high-stakes core challenges |
 
-A complex task can start with a stronger configuration. Failed acceptance first triggers diagnosis of the requirement, environment, implementation, or reasoning issue. See the [routing guide](references/worker-routing.md) for selection and correction rules.
+Genuinely complex tasks can start directly at higher tiers, provided the routing rationale explains why slicing or clearer steps cannot bring them down to `luna-max` / `sol-medium`. Failed acceptance first triggers diagnosis of the requirement, environment, implementation, or reasoning issue. See the [routing guide](references/worker-routing.md) for selection and correction rules.
 
 ## Continue across context boundaries
 
-The requirements record preserves the confirmed discussion outcome and its approval source. Unfinished discussions can carry forward through a concise handoff of settled decisions, open questions and pending investigations.
-
-A fresh worker receives the relevant project documents, a complete task card, owned files, dependency evidence, and its verification plan. A resumed main agent reconciles the records with the current repository before scheduling further work.
+The skill, references, templates, and worker profiles are written in plain, jargon-free Simplified Chinese to serve both humans tracking direction/progress and fresh subagents executing tasks without guesswork. Stage documents include executive context, a task-status dashboard, blockers, pending decisions, and technical debt tracking; task cards specify concrete paths, implementation steps, guardrails, and exact verification commands.
 
 | Persistent context | Purpose |
 | --- | --- |
-| Architecture and decisions | Carry current system contracts and durable rationale across stages |
-| Stage requirements and tasks | Preserve scope, requirement coverage, dependencies, and acceptance criteria |
-| Progress and acceptance records | Track what is complete, active, blocked, and supported by evidence |
-| Archived stages and handoffs | Preserve delivered behavior, changes, open items, and inputs to the next stage |
+| Architecture and decisions | Carry design principles, module code maps, durable rationale, and cross-stage technical debt |
+| Stage requirements and tasks | Preserve goals, exclusions, dependency/batch map, model-tier summary, and actionable task cards |
+| Progress and acceptance records | Provide a scannable status dashboard, blockers, direction changes, and reusable verification evidence |
+| Archived stages and handoffs | Preserve delivered behavior, changes, open technical debt, and inputs to the next stage |
 
-Verification follows the risk of the change. Applicable evidence can be reused across worker review and stage acceptance. The main agent reviews requirement coverage and evidence validity alongside structural checks. See the [document contracts](references/document-contracts.md) for the complete lifecycle.
+Verification follows the risk of the change, and applicable evidence is reused across worker review and stage acceptance. `scripts/validate_workflow.py` stays fully backward-compatible with legacy and English stage records while surfacing non-compliant quality gaps—such as missing steps/guardrails, vague paths or commands, oversized cards, missing escalation rationale, or 0% low/mid-tier routing—via explicit `WARN` diagnostics (with optional `--strict-warnings`). See the [document contracts](references/document-contracts.md) for the complete lifecycle.
 
 ## Install
 

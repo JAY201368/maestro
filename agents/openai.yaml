@@ -1,4 +1,4 @@
 interface:
   display_name: "Maestro"
-  short_description: "通过分轮讨论澄清需求，再进行阶段规划、分级调度、验收与归档交接"
-  default_prompt: "Use $maestro to clarify my requirements, confirm our shared understanding, then plan and deliver the stage with fresh workers and proportionate acceptance."
+  short_description: "分轮讨论澄清需求，再完成阶段架构、细粒度拆卡、向下默认分级调度、适度验收与归档交接"
+  default_prompt: "使用 $maestro 先和我分轮把需求聊清楚并确认共识，再按开发阶段规划架构、拆细任务卡、合理分级调度执行者并按风险做好验收。"

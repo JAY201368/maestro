@@ -63,13 +63,13 @@
     <div class="document-tags"><span>Requirements</span><span>Architecture</span><span>Tasks</span><span>Progress</span><span>Decisions</span><span>Evidence</span></div>
   </div>
 </div>
-      <div class="routing-header"><h3>Choose a profile for each task</h3><p>Complexity + uncertainty + failure cost → model and reasoning depth</p></div>
+      <div class="routing-header"><h3>Choose a profile for each task</h3><p>Slice small, write concrete steps, default downward, and justify escalation</p></div>
       <div class="routing-grid">
-        <article><h4>Luna</h4><p>Bounded routine work</p><span class="effort">max</span></article>
-        <article><h4>Sol</h4><p>Implementation &amp; integration</p><span class="effort">medium · high · xhigh · max</span></article>
-        <article><h4>Astra</h4><p>Design uncertainty &amp; cross-system reasoning</p><span class="effort">medium · high · xhigh · max</span></article>
+        <article><h4>Luna</h4><p>Read-only research, pure utilities, copy, cleanup &amp; tests</p><span class="effort">max</span></article>
+        <article><h4>Sol</h4><p>medium for clear contracts; high+ for cross-module &amp; transactions</p><span class="effort">medium · high · xhigh · max</span></article>
+        <article><h4>Astra</h4><p>Design uncertainty, tradeoffs &amp; cross-system reasoning</p><span class="effort">medium · high · xhigh · max</span></article>
       </div>
-      <p class="routing-foot">Complex tasks can start with a stronger profile. <a href="https://github.com/JAY201368/maestro/blob/main/references/worker-routing.md">Routing rules ↗</a></p>
+      <p class="routing-foot">Complex tasks can start higher when the rationale explains why slicing cannot lower the tier. <a href="https://github.com/JAY201368/maestro/blob/main/references/worker-routing.md">Routing rules ↗</a></p>
     </section>
     <section class="workflow-section" id="workflow"><div class="wrap">
       <div class="section-heading"><div><p class="eyebrow">THE GENERAL FLOW</p><h2>One stage, from brief to handoff.</h2></div><p>Read downward. Follow the loops when a task needs another pass or the queue still has work.</p></div>
@@ -94,7 +94,7 @@
       <div class="simple-arrow" aria-hidden="true">→</div>
       <div class="flow-node"><h3>Design architecture</h3><p>Interfaces, invariants &amp; failure rules</p></div>
       <div class="simple-arrow" aria-hidden="true">→</div>
-      <div class="flow-node"><h3>Plan the task graph</h3><p>Dependencies, ownership &amp; acceptance</p></div>
+      <div class="flow-node"><h3>Plan the task graph</h3><p>Dependencies, paths, steps, guardrails &amp; checks</p></div>
     </div>
   </div>
   <div class="phase-transition"><span>contracts and task cards ready</span><b aria-hidden="true">↓</b></div>
@@ -126,14 +126,14 @@
   </div>
   <div class="change-rule"><a href="#discussion"><strong>↶ Material change or new ambiguity? Return to discussion</strong></a><span>Reopen affected branches → confirm the revised understanding → update architecture and task cards → resume. Clear small edits reuse agreed decisions.</span></div>
 </div>
-      <p class="checkpoint-note"><span class="commit-dot" aria-hidden="true"></span> One local Git commit per accepted task, workflow setup, material change, discussion handoff save or update, and completed archive.</p>
+      <p class="checkpoint-note"><span class="commit-dot" aria-hidden="true"></span> One local Git commit per core/high-risk task (or mini-batch for related low/mid-tier small cards), plus workflow setup, material changes, discussion handoffs, and completed archives.</p>
     </div></section>
     <section class="context-section wrap" id="context">
       <div class="section-heading"><div><p class="eyebrow">ACROSS CONTEXT BOUNDARIES</p><h2>The work carries forward.</h2></div><p>New workers read the current contracts and delivery state. Resumed sessions check those records against the repository before continuing.</p></div>
 <div class="continuity-map">
   <div class="context-card"><span class="node-label">WORKER A FINISHES</span><h3>Task result</h3><p>Changed files<br>Checks &amp; evidence<br>Decisions proposed</p></div>
   <div class="context-arrow"><span>main agent<br>reviews &amp; records</span><i class="arrow-line"></i></div>
-  <div class="context-card context-records"><span class="node-label">DURABLE STATE</span><h3>Project records + Git</h3><p>Confirmed requirements &amp; contracts<br>Accepted work &amp; blockers<br>Evidence &amp; decisions</p></div>
+  <div class="context-card context-records"><span class="node-label">DURABLE STATE</span><h3>Project records + Git</h3><p>Confirmed requirements &amp; contracts<br>Status board, blockers &amp; tech debt<br>Evidence &amp; decisions</p></div>
   <div class="context-arrow"><span>reconcile with<br>the repository</span><i class="arrow-line"></i></div>
   <div class="context-card"><span class="node-label">FRESH WORKER / SESSION</span><h3>Context restored</h3><p>Relevant documents<br>A complete task card<br>Dependencies &amp; checks</p></div>
 </div>

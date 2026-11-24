@@ -1,43 +1,69 @@
-# Requirements discussion
+# 需求讨论与澄清指南
 
-Use this built-in grilling protocol before a new project or stage, and when goals, scope, architecture or acceptance materially change. It is self-contained. Clear small edits and stable execution/resumption reuse applicable confirmed conclusions.
+启动新项目、开启新阶段，或者目标、范围、架构、验收标准发生重大变化时，先走这套内置的追问澄清流程。明确的小改动和稳定续跑直接沿用已经确认过的结论，不必重复盘问。
 
-## Build the decision tree
+## 1. 先理清决策之间的依赖顺序
 
-Map the request as a design tree. Each decision branches into the decisions that depend on it. Treat explicit user requirements and applicable prior confirmations as settled nodes, retaining their source. Surface conflicts and changed assumptions. Track settled decisions, open questions, dependencies and pending investigations.
+拿到用户的需求后，先在心里（或草稿里）画出关键决策的先后关系：哪些问题定下来之后，后面的分支才需要讨论。
 
-Explore the branches relevant to the requested stage, including outcomes, scope, users and key scenarios, failure and boundary behavior, observable acceptance, and applicable interface/interaction, data, deployment and delivery constraints. Review inherited issues when entering a new stage. Ask the user about choices that affect their expected outcome. The main agent owns routine reversible implementation details within agreed requirements. Full architecture design and task decomposition follow confirmation.
+- 用户已经明确说过的话、之前已经确认且仍然适用的结论，直接标为**已敲定**，并保留来源，不要反复再问一遍。
+- 如果发现新需求和既有代码、架构或先前结论冲突，直接把冲突点摆出来请用户裁决。
+- 围绕本阶段真正相关的问题展开，重点覆盖：
+  - 最终想达成什么效果、解决什么痛点；
+  - 本阶段做什么、明确不做什么；
+  - 核心使用场景，以及异常/边界情况怎么处理；
+  - 怎样算做成了（可观察的验收标准）；
+  - 必要的接口、数据、部署、外部授权或成本约束。
+- 如果是开启下一阶段，必须把上一阶段交接文档里的**每一条遗留问题、未完成需求和技术债**都纳入讨论，逐一确定去向。
 
-## Work in rounds
+**分工界限**：凡是会影响用户看到的结果、产品取舍、范围增减或外部付费/发布授权的选择，必须由用户决定；在已确认需求范围内、容易调整的常规工程实现细节，由主代理直接决定即可，不必事无巨细都打断用户。详细的架构设计与任务拆解，等需求共识确认后再做。
 
-The frontier contains every open decision whose prerequisites are settled. Ask the whole current frontier in one round. Number questions continuously, give a recommended answer for each, and phrase each so “yes” accepts the recommendation. Use the following format, including in the available user-input tool when supported.
+## 2. 按轮次一次性问完当前能回答的问题
+
+每一轮只提出**前置条件都已经清楚、现在就能直接拍板的问题**，一次性全部列出；依赖本轮答案才能展开的后续问题，留到下一轮再问。
+
+提问时保持清晰、通俗、少黑话：
+- 问题连续编号（`Q1`、`Q2`、`Q3`……）；
+- 每个问题都给出你的**推荐方案**与简短理由，并把问题写成“用户回复‘同意’或‘按推荐来’即可采纳”的表达方式；
+- 如果交互环境提供了结构化多选提问工具，沿用同样清晰的编号、推荐项与选项结构；纯文本交互时按以下格式输出：
 
 ```text
-❓ **Q1** - **<question title>**: <question and relevant options>
+❓ **Q1** - **<简短问题标题>**：<用大白话说明背景与可选方案>
 
-➡️ <recommended answer>
+➡️ 推荐：<推荐方案及一句理由>
 
 ---
 
-❓ **Q2** - **<question title>**: <question and relevant options>
+❓ **Q2** - **<简短问题标题>**：<用大白话说明背景与可选方案>
 
-➡️ <recommended answer>
+➡️ 推荐：<推荐方案及一句理由>
 ```
 
-Wait for the user's answers. Recompute the tree after each round. Dependent questions wait for a later round. Partial answers leave their nodes open; elapsed time and silence settle no decisions. Continue until every relevant branch is resolved and the frontier is empty.
+提出一轮问题后等待用户回答，再根据回答刷新剩余分支。用户漏答的问题保持未决，**绝不把用户的沉默或未提及当成默认同意**。持续推进，直到所有关键分支都有明确结论。
 
-## Investigate facts
+## 3. 查证代码和环境事实归代理，不把技术摸底推给用户
 
-Finding repository and environment facts belongs to the agent. Assign bounded read-only investigation to a fresh-context subagent, supplying the question, relevant paths and preservation boundaries. These investigators need no implementation task card or initialized stage. Use the existing routing guidance and actual runtime capacity. A pending investigation is an unsettled prerequisite; ask independent frontier questions while it runs. Investigators report facts and evidence to the main agent, which retains ownership of user questions and shared records.
+凡是翻仓库代码、查配置文件、核对依赖版本就能确认的事实，由代理自行查清，不要反过来问用户。
 
-When subagent tools are unavailable or delegation is outside the current authorization, perform the bounded read-only lookup directly and report the constraint if it affects the discussion. Keep product decisions with the user. Investigation and discussion notes may proceed before confirmation; formal initialization, architecture/task planning and affected implementation wait for it.
+- 需要深入摸底仓库现状时，优先派发一个**只读调查子代理**（通常选 `spec-worker-luna-max`），采用全新上下文，给清调查编号、具体问题、相关路径、只读边界和期望回报的事实清单。这类前期只读调查不需要先建任务卡或初始化阶段。
+- 在只读调查运行期间，可以把不依赖调查结果的产品问题先问用户，节省来回时间。
+- 调查者只向主代理回报事实和代码证据；向用户提问与更新共享文档始终由主代理负责。如果当前环境不支持派发子代理，由主代理直接做有界只读查询并如实说明限制。
+- 只读调查和讨论草稿可以在确认共识前进行，但正式初始化阶段、写架构/任务卡以及开始写代码，都必须等到用户确认共识之后。
 
-## Confirm and hand off
+## 4. 总结共识、拿到确认再开工
 
-When all relevant branches are settled, summarize the shared understanding with goals, included scope and agreed exclusions, key scenarios and boundaries, constraints, observable acceptance and closure criteria. Ask the user to confirm this concrete summary. An existing explicit confirmation covering the same summary is sufficient. A revision that changes the agreed outcome reopens the affected branches and requires confirmation of the revised understanding.
+所有关键问题都落定后，用通俗、具体的中文把共同理解汇总成一份**共识确认单**，发给用户明确拍板。内容必须覆盖：
+1. **本阶段要解决什么问题、最终做成什么样**；
+2. **明确包含的范围**，以及**明确不做的排除项**；
+3. **核心业务场景与关键边界/异常处理**；
+4. **必须遵守的约束与授权红线**；
+5. **怎样算完成（客观验收标准与收尾条件）**；
+6. 若为新阶段，**上一阶段遗留项与技术债的逐项处置结论**。
 
-After confirmation, record the summary and its confirmation basis in the mapped requirements document, then proceed to architecture and task planning. Link requirement IDs into the task cards and acceptance criteria. A structural validator cannot establish that the user agreed or that the discussion was complete.
+拿到用户明确确认后，把这份共识和确认依据（哪次对话/哪份文档）记入本阶段的 `REQUIREMENTS.md`，然后进入架构设计与任务拆解。若后续改动改变了已确认的交付结果，只需重开受影响的分支重新确认，不必推倒重问全部问题。
 
-For an active existing stage, keep unresolved questions and pending investigations in its progress record. For a new project or an uninitialized next stage, discuss in the conversation before initializing stage documents. Keep archived stage records immutable; save any needed next-stage discussion handoff separately. If an unfinished discussion must survive a context change, save a concise handoff at a discoverable project path and tell the user where it is. Include the goal, settled decisions and sources, remaining tree/frontier, pending investigations and relevant findings, and confirmation status. Resume by reconciling that record with the latest user instructions. Fold confirmed outcomes into authoritative requirements and clear superseded pending items.
+## 5. 跨会话保留未完成的讨论
 
-Follow the [Git commit rule](../SKILL.md#commit-accepted-tasks-and-workflow-milestones) when completing a workflow change, including each completed save or update of a discussion handoff. The next stage uses its own working records. Carry forward applicable architecture, durable decisions and the previous stage's confirmed handoff.
+- 如果是在**当前活动阶段**内出现未决问题或待查证事项，直接记入本阶段的 `PROGRESS.md`（“当前阻塞项与待用户拍板的决策”一节）。
+- 如果是**新项目**或**尚未初始化的新阶段**，讨论默认留在对话中，确认后再建目录。绝不修改已经归档的历史阶段记录。
+- 如果未完成的讨论需要跨会话保留，在项目中一个容易找到的位置保存一份简明的**讨论交接单**（包含：目标、已敲定结论及来源、尚未回答的问题、待查证事项与已有发现、确认状态），告知用户文件路径，并按 [提交规则](../SKILL.md#7-提交已验收工作与流程里程碑) 做一次本地提交。恢复讨论时，先拿交接单对照用户最新指令，确认后再合入正式 `REQUIREMENTS.md`。
